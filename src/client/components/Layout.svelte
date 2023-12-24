@@ -24,19 +24,17 @@
 				<li>
 					<a href="/me">Profile</a>
 				</li>
-				{#if $user.admin}
-					<li>
-						<details class="dropdown">
-							<summary role="button" class="outline">Admin</summary>
-							<ul>
-								<li><a href="/admin/users">User Management</a></li>
-								<li><a href="/admin/clients">Client Management</a></li>
-								<li><a href="/admin/accounting">Accounting</a></li>
-								<!-- TODO: add company info tab here (company config, not clients) -->
-							</ul>
-						</details>
-					</li>
-				{/if}
+				<li>
+					<details class="dropdown">
+						<summary role="button" class="outline">Admin</summary>
+						<ul>
+							<li><a href="/admin/users">User Management</a></li>
+							<li><a href="/admin/clients">Client Management</a></li>
+							<li><a href="/admin/accounting">Accounting</a></li>
+							<!-- TODO: add company info tab here (company config, not clients) -->
+						</ul>
+					</details>
+				</li>
 				<li>
 					<a href="/logout" role="button">Log Out</a>
 				</li>

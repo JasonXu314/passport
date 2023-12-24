@@ -1,15 +1,30 @@
 <script lang="ts">
-	export let appId: number, redirectTo: string, referrer: string;
+	import axios from 'axios';
+	import Layout from '../components/Layout.svelte';
+
+	export let app: Application | null, redirectTo: string | null, referrer: string | null, badAppId: boolean;
+	let name: string, password: string;
+
+	function login(): void {
+		axios.post('/api/users/login');
+	}
 </script>
 
-<form action="/login" method="POST">
-	<label>
-		Username
-		<input type="text" name="name" />
-	</label>
-	<label>
-		Password
-		<input type="password" name="password" />
-	</label>
-	<button type="submit">Login</button>
-</form>
+<Layout>
+	{#if badAppId}
+		<h1 class="error"><i class="fa-solid fa-triangle-exclamation"></i> Bad login link</h1>
+		<p>Unknown login destination; if you have been given this link by someone else, this may be an attempt to steal your info.</p>
+	{/if}
+	<h1>Login</h1>
+	<form on:submit|preventDefault={login}>
+		<label>
+			Username
+			<input type="text" bind:value={name} />
+		</label>
+		<label>
+			Password
+			<input type="password" bind:value={password} />
+		</label>
+		<button type="submit">Login</button>
+	</form>
+</Layout>
