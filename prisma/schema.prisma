@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id            String  @id @default(uuid())
+    name          String
+    discriminator Int
+    password      String
+    avatar        String
+    token         String?
+
+    grants       Grant[]
+    applications Application[]
+
+    @@unique([name, discriminator])
+}
+
+model Application {
+    id        Int    @id @default(autoincrement())
+    ownerId   String
+    name      String
+    baseURL   String
+    icon      String
+    revokeURL String
+
+    grants Grant[]
+    owner  User    @relation(fields: [ownerId], references: [id])
+}
+
+model Grant {
+    userId String
+    appId  Int
+    token  String
+
+    user User        @relation(fields: [userId], references: [id])
+    app  Application @relation(fields: [appId], references: [id])
+
+    @@id([userId, appId])
+}
