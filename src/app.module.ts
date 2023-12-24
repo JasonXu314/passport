@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule, DATA_SOURCE, PREFIX } from './auth/auth.module';
+import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { UsersService } from './users/users.service';
 
@@ -14,7 +15,8 @@ import { UsersService } from './users/users.service';
 			rootPath: 'dist/client/assets',
 			serveRoot: '/__app'
 		}),
-		UsersModule
+		UsersModule,
+		PrismaModule
 	],
 	controllers: [AppController],
 	providers: [AppService, { provide: PREFIX, useValue: 'passport' }, { provide: DATA_SOURCE, useClass: UsersService }]

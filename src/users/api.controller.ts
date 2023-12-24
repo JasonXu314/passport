@@ -3,9 +3,8 @@ import { Response } from 'express';
 import { ApplicationsService } from 'src/applications/applications.service';
 import { Protected } from 'src/auth/protected.decorator';
 import { AUTH_COOKIE_OPTIONS } from 'src/utils/constants';
-import { Redirect } from 'src/utils/filters/redirect.filter';
 import { ReqUser } from 'src/utils/utils';
-import { AuthorizationResponseDTO, AuthorizeApplicationDTO, LoginDTO, SignupDTO } from './dtos';
+import { AuthorizationResponseDTO, AuthorizeApplicationDTO, LoginDTO, LoginSuccessDTO, SignupDTO } from './dtos';
 import { User } from './models';
 import { UsersService } from './users.service';
 
@@ -19,7 +18,7 @@ export class UsersController {
 	}
 
 	@Post('/login')
-	public async login(@Body() data: LoginDTO, @Res({ passthrough: true }) res: Response): Promise<void> {
+	public async login(@Body() data: LoginDTO, @Res({ passthrough: true }) res: Response): Promise<LoginSuccessDTO> {
 		if (data.appId === undefined) {
 			// Logging into Passport itself
 			if (data.redirectTo !== undefined && !data.redirectTo.startsWith('/')) {
@@ -36,15 +35,15 @@ export class UsersController {
 				} else {
 					const token = await this.service.issueToken(user);
 
+					user.token = token;
 					res.cookie('passport::token', token, AUTH_COOKIE_OPTIONS);
 				}
 			}
 
-			if (data.redirectTo !== undefined) {
-				throw new Redirect(data.redirectTo);
-			} else {
-				throw new Redirect('/me');
-			}
+			return {
+				token: user.token,
+				redirectURL: data.redirectTo ?? '/me'
+			};
 		} else {
 			const application = await this.applications.getApplication({ id: data.appId }); // TODO: i wonder if i can move this further down
 
@@ -53,11 +52,6 @@ export class UsersController {
 			}
 
 			const redirectURL = await this.applications.resolveRedirect(data.appId, data.redirectTo);
-			const preppedRedirectURL = redirectURL.includes('?') ? redirectURL + '&' : redirectURL + '?';
-
-			if (!redirectURL.startsWith(application.baseURL)) {
-				throw new BadRequestException('Redirect URL must either be a relative path or start with the base URL of the application');
-			}
 
 			const user = await this.service.login(data);
 
@@ -69,6 +63,7 @@ export class UsersController {
 				} else {
 					const token = await this.service.issueToken(user);
 
+					user.token = token;
 					res.cookie('passport::token', token, AUTH_COOKIE_OPTIONS);
 				}
 			}
@@ -79,7 +74,10 @@ export class UsersController {
 				throw new ConflictException('Requires application grant.');
 			}
 
-			throw new Redirect(`${preppedRedirectURL}token=${encodeURIComponent(grant.token)}`);
+			return {
+				token: user.token,
+				redirectURL
+			};
 		}
 	}
 

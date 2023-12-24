@@ -16,7 +16,7 @@ model User {
     discriminator Int
     password      String
     avatar        String
-    token         String?
+    token         String? @db.VarChar(255)
 
     grants       Grant[]
     applications Application[]
@@ -39,7 +39,7 @@ model Application {
 model Grant {
     userId String
     appId  Int
-    token  String
+    token  String @db.VarChar(255)
 
     user User        @relation(fields: [userId], references: [id])
     app  Application @relation(fields: [appId], references: [id])

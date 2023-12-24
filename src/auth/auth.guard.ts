@@ -26,7 +26,7 @@ export class AuthGuard implements CanActivate {
 			} else if (user === null) {
 				throw new Redirect('/login');
 			} else {
-				return !requireAdmin || user.admin;
+				return !requireAdmin;
 			}
 		} else {
 			return true;

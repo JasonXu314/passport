@@ -31,6 +31,11 @@ export class LoginDTO {
 	referrer?: string;
 }
 
+export interface LoginSuccessDTO {
+	token: string;
+	redirectURL: string;
+}
+
 export class AuthorizeApplicationDTO {
 	@IsInt()
 	appId: number = fi();

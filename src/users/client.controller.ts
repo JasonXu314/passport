@@ -1,4 +1,4 @@
-import { Controller, Get, Headers, Post, Query, Render, Res } from '@nestjs/common';
+import { Controller, Get, Headers, Query, Render, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ApplicationsService } from 'src/applications/applications.service';
 import { Protected } from 'src/auth/protected.decorator';
@@ -46,7 +46,7 @@ export class UsersClientController {
 		};
 	}
 
-	@Post('/logout')
+	@Get('/logout')
 	@Render('logout')
 	public async logout(@ReqUser() user: User | null, @Res({ passthrough: true }) res: Response): Promise<PageProps> {
 		if (user !== null) {

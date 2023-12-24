@@ -1,12 +1,21 @@
 <script lang="ts">
 	import axios from 'axios';
+	import type { LoginSuccessDTO } from 'src/users/dtos';
 	import Layout from '../components/Layout.svelte';
 
 	export let app: Application | null, redirectTo: string | null, referrer: string | null, badAppId: boolean;
 	let name: string, password: string;
 
 	function login(): void {
-		axios.post('/api/users/login');
+		axios
+			.post<LoginSuccessDTO>('/api/users/login', { name, password })
+			.then((res) => {
+				location.assign(res.data.redirectURL);
+				console.log(res.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 </script>
 

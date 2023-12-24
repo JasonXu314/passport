@@ -1,17 +1,17 @@
 import { writable } from 'svelte/store';
 
-interface NotificationProps {
+export interface NotificationProps {
 	title?: string;
 	text?: string;
 	err?: boolean;
 }
 
-interface NotificationOptions {
+export interface NotificationOptions {
 	ttl?: number | null;
 	place?: number | null;
 }
 
-interface UpdateHandleOptions {
+export interface UpdateHandleOptions {
 	resetTTL?: boolean;
 }
 

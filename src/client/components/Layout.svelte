@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { path, user } from '$meta';
-	import Notification from 'src/client/components/Notification.svelte';
 	import { store } from 'src/client/utils/notifications.ts';
 	import { toTitleCase } from 'src/client/utils/utils.ts';
 	import { Readable, derived } from 'svelte/store';
+	import Notification from './Notification.svelte';
 
 	const parts: Readable<string[]> = derived(path, (path, set) => {
 		set(path?.split('/') ?? []);
