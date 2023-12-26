@@ -19,6 +19,9 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Passport | Login</title>
+</svelte:head>
 <Layout>
 	{#if badAppId}
 		<h1 class="error"><i class="fa-solid fa-triangle-exclamation"></i> Bad login link</h1>

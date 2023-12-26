@@ -19,6 +19,9 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Passport | Create App</title>
+</svelte:head>
 <Layout>
 	<h1>New Application</h1>
 	<form on:submit|preventDefault={create}>

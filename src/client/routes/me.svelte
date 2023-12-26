@@ -5,6 +5,9 @@
 	export let grants: Grant[];
 </script>
 
+<svelte:head>
+	<title>Passport | Profile</title>
+</svelte:head>
 <Layout>
 	<article class="user-card">
 		<img src={$user.avatar} alt="Avatar" />

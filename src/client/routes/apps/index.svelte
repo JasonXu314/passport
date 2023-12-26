@@ -4,6 +4,9 @@
 	export let applications: Application[];
 </script>
 
+<svelte:head>
+	<title>Passport | Apps</title>
+</svelte:head>
 <Layout>
 	<h1>Applications</h1>
 	<table>

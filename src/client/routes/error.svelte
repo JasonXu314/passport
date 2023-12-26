@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>[placeholder] - Oops!</title>
+	<title>Passport - Oops!</title>
 </svelte:head>
 
 <main class="container">
