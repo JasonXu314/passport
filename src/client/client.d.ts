@@ -21,9 +21,9 @@ type Grant = import('@prisma/client').Grant & {
 	app: Application;
 };
 
-interface PageProps {
+interface PageProps<T extends Record<string, string> = any> {
 	user: User | null;
-	__meta?: any;
+	__meta?: T;
 }
 
 interface LoginProps extends PageProps {
@@ -35,4 +35,8 @@ interface LoginProps extends PageProps {
 
 interface MeProps extends PageProps {
 	grants: Grant[];
+}
+
+interface AppsProps extends PageProps {
+	applications: Application[];
 }

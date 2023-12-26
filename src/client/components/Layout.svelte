@@ -26,12 +26,10 @@
 				</li>
 				<li>
 					<details class="dropdown">
-						<summary role="button" class="outline">Admin</summary>
+						<summary role="button" class="outline">My Apps</summary>
 						<ul>
-							<li><a href="/admin/users">User Management</a></li>
-							<li><a href="/admin/clients">Client Management</a></li>
-							<li><a href="/admin/accounting">Accounting</a></li>
-							<!-- TODO: add company info tab here (company config, not clients) -->
+							<li><a href="/apps">All Apps</a></li>
+							<li><a href="/apps/new" role="button">Create New</a></li>
 						</ul>
 					</details>
 				</li>

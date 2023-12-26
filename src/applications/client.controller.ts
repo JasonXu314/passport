@@ -1,66 +1,29 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Render } from '@nestjs/common';
 import { Protected } from 'src/auth/protected.decorator';
+import { ReqUser } from 'src/utils/utils';
 import { ApplicationsService } from './applications.service';
 
-@Controller('/admin/apps')
-@Protected({ requireAdmin: true })
+@Controller('/apps')
+@Protected()
 export class ApplicationsClientController {
 	constructor(private readonly service: ApplicationsService) {}
 
-	// @Get('/')
-	// public async dashboard(@ReqUser() user: User): Promise<string> {
-	// 	const applications = await this.service.getApplications();
+	@Get('/')
+	@Render('apps/index')
+	public async dashboard(@ReqUser() user: User): Promise<AppsProps> {
+		const applications = await this.service.getApplications();
 
-	// 	return $layout(
-	// 		'Passport - Apps Admin',
-	// 		user,
-	// 		`<style>
-	// 			.icon {
-	// 				max-height: 4em;
-	// 			}
-	// 		</style>`
-	// 	)`
-	// 		<h1>Applications</h1>
-	// 		${$table(applications)`<th scope="col">${['ID', 'Name', 'Icon', 'Base URL', 'Revokation Endpoint']}</th>`(
-	// 			({ id, name, icon, baseURL, revokationEndpoint }) => `
-	// 			<tr>
-	// 				<td>${id}</td>
-	// 				<td><a href="/admin/apps/${id}">${name}</a></td>
-	// 				<td><img class="icon" src="${icon}" alt="Icon"></td>
-	// 				<td>${baseURL}</td>
-	// 				<td>${revokationEndpoint}</td>
-	// 			</tr>
-	// 		`
-	// 		)}
-	// 		<a href="/admin/apps/new" role="button">New Application</a>
-	// 	`;
-	// }
+		return {
+			user,
+			applications
+		};
+	}
 
-	// @Get('/new')
-	// public async newApplication(@ReqUser() user: User): Promise<string> {
-	// 	return $layout('Passport - New App', user)`
-	// 		<h1>New Application</h1>
-	// 		<form action="/admin/apps/new" method="POST" enctype="multipart/form-data">
-	// 			<label>
-	// 				Name
-	// 				<input type="text" name="name">
-	// 			</label>
-	// 			<label>
-	// 				Base URL
-	// 				<input type="text" name="baseURL">
-	// 			</label>
-	// 			<label>
-	// 				Icon
-	// 				<input type="file" name="icon">
-	// 			</label>
-	// 			<label>
-	// 				Revokation Endpoint
-	// 				<input type="text" name="revokationEndpoint">
-	// 			</label>
-	// 			<button type="submit">Create</button>
-	// 		</form>
-	// 	`;
-	// }
+	@Get('/new')
+	@Render('apps/new')
+	public async newApplication(@ReqUser() user: User): Promise<PageProps> {
+		return { user };
+	}
 
 	// @Post('/new')
 	// @UseInterceptors(FileInterceptor('icon', { storage: memoryStorage() }))
