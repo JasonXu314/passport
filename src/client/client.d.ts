@@ -14,16 +14,17 @@ declare module '*.svelte' {
 declare module '$meta' {
 	export const path: Writable<string>;
 	export const user: Writable<User>;
-	export const extra: Writable<any>;
+	export const extra: Writable<{ applications: Application[] }>;
 }
 
 type Grant = import('@prisma/client').Grant & {
 	app: Application;
 };
 
-interface PageProps<T extends Record<string, string> = any> {
+interface PageProps<T extends Record<string, any> = Record<string, any>> {
 	user: User | null;
-	__meta?: T;
+	__meta: T & { applications: Application[] };
+	__path?: string;
 }
 
 interface LoginProps extends PageProps {
@@ -40,3 +41,9 @@ interface MeProps extends PageProps {
 interface AppsProps extends PageProps {
 	applications: Application[];
 }
+
+interface AppProps extends PageProps {
+	app: Application;
+	__path: string;
+}
+

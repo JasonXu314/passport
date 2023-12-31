@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { path, user } from '$meta';
+	import { extra, path, user } from '$meta';
 	import { store } from 'src/client/utils/notifications.ts';
 	import { toTitleCase } from 'src/client/utils/utils.ts';
 	import { Readable, derived } from 'svelte/store';
@@ -8,6 +8,8 @@
 	const parts: Readable<string[]> = derived(path, (path, set) => {
 		set(path?.split('/') ?? []);
 	});
+
+	const apps: Readable<Application[]> = derived(extra, (extra, set) => set(extra.applications));
 </script>
 
 <main class="container">
@@ -29,6 +31,9 @@
 						<summary role="button" class="outline">My Apps</summary>
 						<ul>
 							<li><a href="/apps">All Apps</a></li>
+							{#each $apps as app}
+								<li><a href="/apps/{app.id}">{app.name}</a></li>
+							{/each}
 							<li><a href="/apps/new" role="button">Create New</a></li>
 						</ul>
 					</details>

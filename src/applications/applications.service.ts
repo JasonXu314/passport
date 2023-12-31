@@ -7,8 +7,8 @@ import { CreateApplicationDTO } from './dtos';
 export class ApplicationsService {
 	public constructor(private readonly prisma: PrismaService) {}
 
-	public async getApplications() {
-		return this.prisma.application.findMany();
+	public async getApplications(where: Prisma.ApplicationWhereInput = {}) {
+		return this.prisma.application.findMany({ where });
 	}
 
 	public async getApplication(where: Prisma.ApplicationWhereUniqueInput) {

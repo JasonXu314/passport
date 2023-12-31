@@ -7,10 +7,9 @@
 	function create(): void {
 		if (icon.length > 0) {
 			axios
-				.postForm('/api/apps/new', { name, baseURL, revokeURL, icon: icon.item(0) })
+				.postForm<Application>('/api/apps/new', { name, baseURL, revokeURL, icon: icon.item(0) })
 				.then((res) => {
-					location.assign('/apps');
-					console.log(res.data);
+					location.assign(`/apps/${res.data.id}`);
 				})
 				.catch((err) => {
 					console.log(err);

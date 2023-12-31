@@ -1,4 +1,4 @@
-import { Controller, Get, Render } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, ParseIntPipe, Render } from '@nestjs/common';
 import { Protected } from 'src/auth/protected.decorator';
 import { ReqUser } from 'src/utils/utils';
 import { ApplicationsService } from './applications.service';
@@ -11,78 +11,35 @@ export class ApplicationsClientController {
 	@Get('/')
 	@Render('apps/index')
 	public async dashboard(@ReqUser() user: User): Promise<AppsProps> {
-		const applications = await this.service.getApplications();
+		const applications = await this.service.getApplications({ ownerId: user.id });
 
 		return {
 			user,
-			applications
+			applications,
+			__meta: { applications }
 		};
 	}
 
 	@Get('/new')
 	@Render('apps/new')
 	public async newApplication(@ReqUser() user: User): Promise<PageProps> {
-		return { user };
+		const applications = await this.service.getApplications({ ownerId: user.id });
+
+		return { user, __meta: { applications } };
 	}
 
-	// @Post('/new')
-	// @UseInterceptors(FileInterceptor('icon', { storage: memoryStorage() }))
-	// public async newApplicationAPI(@Body() data: CreateApplicationDTO, @UploadedFile() file: Express.Multer.File): Promise<void> {
-	// 	const form = new FormData();
-	// 	form.append('file', file.buffer, { filename: file.originalname });
-	// 	const res = await axios.postForm<string>(`${process.env.CDN_URL}`, form);
+	@Get('/:id')
+	@Render('apps/id')
+	public async appDashboard(@ReqUser() user: User, @Param('id', ParseIntPipe) id: number): Promise<AppProps> {
+		const app = await this.service.getApplication({ id, ownerId: user.id });
 
-	// 	await this.service.createApplication({ ...data, icon: `${process.env.CDN_URL}/${res.data}` });
-	// 	throw new Redirect('/admin/apps');
-	// }
+		if (!app) {
+			throw new NotFoundException('App not found');
+		}
 
-	// @Get('/:id')
-	// public async appDashboard(@ReqUser() user: User, @Param('id', ParseIntPipe) id: number): Promise<string> {
-	// 	const app = await this.service.getApplication({ id });
+		const applications = await this.service.getApplications({ ownerId: user.id });
 
-	// 	if (!app) {
-	// 		throw new NotFoundException(
-	// 			new ErrorPage(
-	// 				() => $layout('Passport - Apps Admin', user)`
-	// 		<h1>App not found</h1>
-	// 		<a href="/admin/apps">Back</a>`
-	// 			)
-	// 		);
-	// 	}
-
-	// 	return $layout(
-	// 		'Passport - Apps Admin',
-	// 		user,
-	// 		`<style>
-	// 			.icon {
-	// 				max-height: 8em;
-	// 			}
-	// 		</style>`
-	// 	)`
-	// 		<h1>${app.name}</h1>
-	// 		<a href="/admin/apps">Back</a>
-	// 		<a href="/admin/apps/${id}/key" role="button" download>Download Key</a>
-	// 	`;
-	// }
-
-	// @Get('/:id/key')
-	// public async appKey(@ReqUser() user: User, @Param('id', ParseIntPipe) id: number): Promise<StreamableFile> {
-	// 	const app = await this.service.getApplication({ id });
-
-	// 	if (!app) {
-	// 		throw new NotFoundException(
-	// 			new ErrorPage(
-	// 				() => $layout('Passport - Apps Admin', user)`
-	// 		<h1>App not found</h1>
-	// 		<a href="/admin/apps">Back</a>`
-	// 			)
-	// 		);
-	// 	}
-
-	// 	return new StreamableFile(Uint8Array.from(Buffer.from(app.publicKey)), {
-	// 		disposition: 'attachment; filename="key.pem"',
-	// 		type: 'application/x-pem-file'
-	// 	});
-	// }
+		return { user, app, __path: `/apps/${id}`, __meta: { applications } };
+	}
 }
 
