@@ -7,6 +7,7 @@ import { AuthModule, DATA_SOURCE, PREFIX } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { UsersService } from './users/users.service';
+import { ApplicationsModule } from './applications/applications.module';
 
 @Module({
 	imports: [
@@ -16,7 +17,8 @@ import { UsersService } from './users/users.service';
 			serveRoot: '/__app'
 		}),
 		UsersModule,
-		PrismaModule
+		PrismaModule,
+		ApplicationsModule
 	],
 	controllers: [AppController],
 	providers: [AppService, { provide: PREFIX, useValue: 'passport' }, { provide: DATA_SOURCE, useClass: UsersService }]

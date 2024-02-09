@@ -1,8 +1,8 @@
-import { Controller, Get, Headers, Query, Render, Res } from '@nestjs/common';
+import { Controller, Get, Headers, NotFoundException, ParseIntPipe, Query, Render, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ApplicationsService } from 'src/applications/applications.service';
 import { Protected } from 'src/auth/protected.decorator';
-import { ReqUser } from 'src/utils/utils';
+import { ReqUser, pruneUser } from 'src/utils/utils';
 import { User } from './models';
 import { UsersService } from './users.service';
 
@@ -23,11 +23,33 @@ export class UsersClientController {
 		const applications = user !== null ? await this.applications.getApplications({ ownerId: user.id }) : [];
 
 		return {
-			user,
+			user: user ? pruneUser(user) : user,
 			app,
-			referrer: referrer === undefined ? null : referrer,
 			redirectTo: redirectTo === undefined ? null : redirectTo,
 			badAppId: !app && toApp,
+			__meta: { applications }
+		};
+	}
+
+	@Get('/authorize')
+	@Render('authorize')
+	public async authorize(
+		@ReqUser() user: User | null,
+		@Query('appId', ParseIntPipe) appId: number,
+		@Query('redirectTo') redirectTo?: string,
+		@Headers('Referer') referrer?: string
+	): Promise<AuthorizeProps> {
+		const app = await this.applications.getApplication({ id: appId });
+		const applications = user !== null ? await this.applications.getApplications({ ownerId: user.id }) : [];
+
+		if (!app) {
+			throw new NotFoundException('Invalid app');
+		}
+
+		return {
+			user: user ? pruneUser(user) : user,
+			app,
+			redirectTo,
 			__meta: { applications }
 		};
 	}
@@ -37,7 +59,7 @@ export class UsersClientController {
 	public async signup(@ReqUser() user: User | null): Promise<PageProps> {
 		const applications = user !== null ? await this.applications.getApplications({ ownerId: user.id }) : [];
 
-		return { user, __meta: { applications } };
+		return { user: user ? pruneUser(user) : user, __meta: { applications } };
 	}
 
 	@Get('/me')
@@ -47,7 +69,7 @@ export class UsersClientController {
 		const applications = await this.applications.getApplications({ ownerId: user.id });
 
 		return {
-			user,
+			user: user ? pruneUser(user) : user,
 			grants: user.grants,
 			__meta: { applications }
 		};

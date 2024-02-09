@@ -25,15 +25,6 @@ export class LoginDTO {
 	@IsString()
 	@IsOptional()
 	redirectTo?: string;
-
-	@IsString()
-	@IsOptional()
-	referrer?: string;
-}
-
-export interface LoginSuccessDTO {
-	token: string;
-	redirectURL: string;
 }
 
 export class AuthorizeApplicationDTO {
@@ -41,11 +32,7 @@ export class AuthorizeApplicationDTO {
 	appId: number = fi();
 
 	@IsString()
-	redirectTo: string = fi();
-}
-
-export interface AuthorizationResponseDTO {
-	token: string;
-	redirectURL: string;
+	@IsOptional()
+	redirectTo?: string;
 }
 

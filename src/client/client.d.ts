@@ -30,8 +30,12 @@ interface PageProps<T extends Record<string, any> = Record<string, any>> {
 interface LoginProps extends PageProps {
 	app: Application | null;
 	redirectTo: string | null;
-	referrer: string | null;
 	badAppId: boolean;
+}
+
+interface AuthorizeProps extends PageProps {
+	app: Application;
+	redirectTo?: string;
 }
 
 interface MeProps extends PageProps {
@@ -44,6 +48,7 @@ interface AppsProps extends PageProps {
 
 interface AppProps extends PageProps {
 	app: Application;
+	users: User[];
 	__path: string;
 }
 

@@ -1,10 +1,11 @@
-import { BadRequestException, Body, ConflictException, Controller, Post, Res, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post, Res, UnauthorizedException } from '@nestjs/common';
 import { Response } from 'express';
 import { ApplicationsService } from 'src/applications/applications.service';
 import { Protected } from 'src/auth/protected.decorator';
 import { AUTH_COOKIE_OPTIONS } from 'src/utils/constants';
+import { Redirect } from 'src/utils/filters/redirect.filter';
 import { ReqUser } from 'src/utils/utils';
-import { AuthorizationResponseDTO, AuthorizeApplicationDTO, LoginDTO, LoginSuccessDTO, SignupDTO } from './dtos';
+import { AuthorizeApplicationDTO, LoginDTO, SignupDTO } from './dtos';
 import { User } from './models';
 import { UsersService } from './users.service';
 
@@ -18,7 +19,7 @@ export class UsersController {
 	}
 
 	@Post('/login')
-	public async login(@Body() data: LoginDTO, @Res({ passthrough: true }) res: Response): Promise<LoginSuccessDTO> {
+	public async login(@Body() data: LoginDTO, @Res({ passthrough: true }) res: Response): Promise<never> {
 		if (data.appId === undefined) {
 			// Logging into Passport itself
 			if (data.redirectTo !== undefined && !data.redirectTo.startsWith('/')) {
@@ -40,18 +41,13 @@ export class UsersController {
 				}
 			}
 
-			return {
-				token: user.token,
-				redirectURL: data.redirectTo ?? '/me'
-			};
+			throw new Redirect(data.redirectTo ?? '/me');
 		} else {
 			const application = await this.applications.getApplication({ id: data.appId }); // TODO: i wonder if i can move this further down
 
 			if (!application) {
 				throw new BadRequestException('Invalid application ID');
 			}
-
-			const redirectURL = await this.applications.resolveRedirect(data.appId, data.redirectTo);
 
 			const user = await this.service.login(data);
 
@@ -71,27 +67,23 @@ export class UsersController {
 			const grant = user.grants.find(({ appId }) => appId === data.appId);
 
 			if (!grant) {
-				throw new ConflictException('Requires application grant.');
+				throw new Redirect(`/authorize?appId=${data.appId}${data.redirectTo !== undefined ? `&redirectTo=${data.redirectTo}` : ''}`);
 			}
 
-			return {
-				token: user.token,
-				redirectURL
-			};
+			const redirectURL = await this.applications.resolveRedirect(data.appId, data.redirectTo);
+
+			throw new Redirect(redirectURL);
 		}
 	}
 
 	@Post('/authorize')
 	@Protected()
-	public async authorize(@ReqUser() user: User, @Body() data: AuthorizeApplicationDTO): Promise<AuthorizationResponseDTO> {
+	public async authorize(@ReqUser() user: User, @Body() data: AuthorizeApplicationDTO): Promise<never> {
 		const token = await this.service.issueAuthorization(user, data.appId);
 
 		const redirectURL = await this.applications.resolveRedirect(data.appId, data.redirectTo);
 
-		return {
-			redirectURL,
-			token
-		};
+		throw new Redirect(`${redirectURL}?token=${token}`);
 	}
 }
 

@@ -18,9 +18,9 @@
 	</article>
 	<h2>Authorized Applications:</h2>
 	{#each grants as { app }}
-		<section>
+		<section class="app">
 			<h3>{app.name}</h3>
-			<img src={app.icon} alt="App Icon" />
+			<div class="icon" style:background-image={`url(${app.icon})`} />
 		</section>
 	{/each}
 </Layout>
@@ -41,5 +41,14 @@
 		display: flex;
 		flex-direction: row;
 		align-items: baseline;
+	}
+
+	.app .icon {
+		height: 8rem;
+		width: 8rem;
+		border-radius: 50%;
+		background-position: center;
+		background-size: cover;
+		margin-bottom: var(--typography-spacing-vertical);
 	}
 </style>

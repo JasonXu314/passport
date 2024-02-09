@@ -1,5 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { readFileSync } from 'fs';
+import { pruneUser } from 'src/utils/utils';
 
 const template = readFileSync('src/client/templates/page.html').toString();
 
@@ -14,7 +15,7 @@ export function svelte(path: string, data: any, next: (e: any, rendered?: string
 
 	const meta = {
 		path: data.__path ?? `/${route.replace(/\/?index.js/, '').replace('.js', '')}`,
-		user: data.user ?? null,
+		user: data.user ? pruneUser(data.user) : null,
 		extra: data.__meta ?? null
 	};
 
