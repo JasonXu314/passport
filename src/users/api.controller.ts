@@ -14,8 +14,10 @@ export class UsersController {
 	constructor(private readonly service: UsersService, private readonly applications: ApplicationsService) {}
 
 	@Post('/signup')
-	public async signup(@Body() data: SignupDTO): Promise<void> {
+	public async signup(@Body() data: SignupDTO): Promise<never> {
 		await this.service.signup(data);
+
+		throw new Redirect('/login');
 	}
 
 	@Post('/login')
